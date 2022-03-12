@@ -21,8 +21,8 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
                     <div class="buttons">
                         <button id="new-btn" class="btn btn-danger">New Game</button>
-                        <button id="card-btn" class="btn btn-primary">Next Card</button>
-                        <button id="stop-btn" class="btn btn-primary">Stop</button>
+                        <button id="card-btn" class="btn btn-primary" disabled>Next Card</button>
+                        <button id="stop-btn" class="btn btn-primary" disabled>Stop</button>
                     </div>
                 </div>
             </div>
@@ -30,14 +30,14 @@
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
                     <h1 class="title-player">Player 1 - <small>0</small></h1>
-                    <div id="player-cards">
+                    <div id="player-cards" class="divCards">
                         
                     </div>
                 </div>
     
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
                     <h1 class="title-player">Bank - <small>0</small></h1>
-                    <div id="bank-cards">
+                    <div id="bank-cards" class="divCards">
                     </div>
                 </div>
             </div>
@@ -45,6 +45,6 @@
 
         <!-- SCRIPTS -->
         <script src="assets/js/underscore.min.js"></script>
-        <script src="assets/js/game.js"></script>
+        <script src="assets/js/game.min.js"></script>
     </body>
 </html>

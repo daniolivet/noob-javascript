@@ -6,16 +6,14 @@
 */
 
 // Module Pattern
-(() => {
+const myModule = (() => {
     'use strict'
 
     let deck       = [];
     const types    = ['C', 'D', 'H', 'S'],
           specials = ['A', 'J', 'Q', 'K'];
     
-/*     let playerPoints = 0,
-        bankPoints   = 0; */
-    let pointPlayers = [];
+    let playerPoints = [];
     
     // buttons
     const btnNew     = document.getElementById('new-btn'),
@@ -24,15 +22,22 @@
     
     // Containers
     const pointsHTML     = document.querySelectorAll('small'),
-          divPlayerCards = document.getElementById('player-cards'),
-          divBankCards   = document.getElementById('bank-cards');
+          divPlayerCards = document.querySelectorAll('.divCards');
     
     const initGame = ( numPlayers = 2 ) =>  {
         deck = createDeck();
+        playerPoints = [];
         for( let i = 0; i < numPlayers; i++ ) {
-            pointPlayers.push(0);
+            playerPoints.push(0);
         }
-        console.log({pointPlayers});
+
+        // Remove Cards
+        divPlayerCards.forEach( elem => elem.innerText = '' );
+        pointsHTML.forEach( elem => elem.innerText = 0 );
+
+        // Reset disabled
+        btnCard.disabled = false;
+        btnStop.disabled = false;
     }
 
     //Create a new deck and return a disordered array
@@ -74,31 +79,25 @@
     
     }
     
-    const acumPoints = () => {
+    // Turn: [0] => player1 - [1] => Bank
+    const acumPoints = ( card, turn ) => {
+        playerPoints[turn] = playerPoints[turn] + valueCard(card);
+        pointsHTML[turn].innerHTML = playerPoints[turn];
 
+        return playerPoints[turn];
     }
 
-    const bankTurn = ( minPoints ) => {
-    
-        do {
-    
-            const card = giveCard();
-    
-            bankPoints = bankPoints + valueCard(card);
-            pointsHTML[1].innerHTML = bankPoints;
-        
-            // Insert card in HTML
-            const imgCard = document.createElement('img');
-            imgCard.src = `assets/cartas/${ card }.png`;
-            imgCard.classList.add('card-game');
-            divBankCards.append( imgCard );
-    
-            if( minPoints > 21 ) {
-                break;
-            }
-    
-        } while( bankPoints < minPoints && minPoints <= 21 );
-        
+    const createCard = ( card, turn ) =>  {
+        const imgCard = document.createElement('img');
+        imgCard.src = `assets/cartas/${ card }.png`;
+        imgCard.classList.add('card-game');
+        divPlayerCards[turn].append( imgCard );
+    }
+
+    const setWinner = () => {
+
+        const [ minPoints, bankPoints ] = playerPoints; 
+
         setTimeout(() => {
             if( bankPoints === minPoints ) {
                 alert('No one wins.');
@@ -109,31 +108,41 @@
             } else {
                 alert('Bank is the winner!!');
             }
-        }, 15 );
+        }, 100 );
+    }
+
+    const bankTurn = ( minPoints ) => {
+        
+        let bankPoints = 0;
+
+        do {
+    
+            const card = giveCard();
+            bankPoints = acumPoints(card, playerPoints.length - 1);
+            
+            // Insert card in HTML
+            createCard(card, playerPoints.length - 1);
+    
+        } while( bankPoints < minPoints && minPoints <= 21 );
+        
+        setWinner();
     }
     
     // Events
     btnCard.addEventListener('click', () => {
         const card = giveCard();
-    
-        playerPoints = playerPoints + valueCard(card);
-        pointsHTML[0].innerHTML = playerPoints;
+        const playerPoints = acumPoints(card, 0);
     
         // Insert card in HTML
-        const imgCard = document.createElement('img');
-        imgCard.src = `assets/cartas/${ card }.png`;
-        imgCard.classList.add('card-game');
-        divPlayerCards.append( imgCard );
+        createCard( card, 0 );
     
         if( playerPoints > 21 ) {
-            alert('Bank is the winner!!');
-    
+            console.warn('Bank is the winner!!');
             btnCard.disabled = true;
             btnStop.disabled = true;
-            /* bankTurn( playerPoints ); */
+            bankTurn( playerPoints );
         } else if ( playerPoints === 21 ) {
             console.warn('You are the winner!!');
-    
             btnCard.disabled = true;
             btnStop.disabled = true;
             bankTurn( playerPoints );
@@ -148,24 +157,12 @@
     });
     
     btnNew.addEventListener('click', () => {
-        console.clear();
         initGame();
-        deck = [];
-        deck = createDeck();
-        
-        // Reset disabled
-        btnCard.disabled = false;
-        btnStop.disabled = false;
-        // Reset points
-/*         playerPoints = 0;
-        bankPoints   = 0; */
-        // Reset points HTML
-        pointsHTML[0].innerText = 0;
-        pointsHTML[1].innerText = 0;
-        // Remove Cards
-        divBankCards.innerHTML   = '';
-        divPlayerCards.innerHTML = '';
-    
     });
+
+    // Make public a functions of module
+    return {
+        newGame: initGame
+    };
 
 })();
