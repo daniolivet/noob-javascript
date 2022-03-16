@@ -8,3 +8,8 @@
 
 Underscore => [Underscore.js](https://underscorejs.org/)
 Webpack    => [Webpack](https://webpack.js.org/)
+Babeljs    => [BabelJS](https://babeljs.io/)
+
+## Install
+
+Use 'npm install'

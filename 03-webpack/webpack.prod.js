@@ -1,12 +1,16 @@
 const HtmlWebpackPlugin    = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
+const CopyPlugin           = require("copy-webpack-plugin");
+
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin       = require("terser-webpack-plugin");
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
 
     output: {
-        clean: true
+        clean: true,
+        filename: 'main.[fullhash].js'
     },
 
     module: {
@@ -30,11 +34,29 @@ module.exports = {
             {
                 test: /\.(png|jpe?g|gif)$/i,
                 use: 'file-loader'
+            },
+            {
+                test: /\.m?js$/,
+                exclude: /node_modules/,
+                use: {
+                  loader: "babel-loader",
+                  options: {
+                    presets: [ '@babel/preset-env' ]
+                  }
+                }
             }
         ]
     },
 
-    optimization: {},
+    optimization: {
+
+        minimize: true,
+        minimizer: [
+            new CssMinimizerPlugin(),
+            new TerserPlugin()
+        ]
+
+    },
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Test Webpack',
@@ -43,7 +65,7 @@ module.exports = {
         }),
 
         new MiniCssExtractPlugin({
-            filename: '[name].css',
+            filename: '[name].[fullhash].css',
             ignoreOrder: false
         }),
 
@@ -51,6 +73,8 @@ module.exports = {
             patterns: [ 
                 { from: './src/assets/', to: 'assets/'}
             ]
-        })
+        }),
+
+        new CssMinimizerPlugin()
     ]
 }
