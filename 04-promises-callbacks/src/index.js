@@ -1,0 +1,1 @@
+import { searchHero, searchHeroAsync } from './js/promises';
